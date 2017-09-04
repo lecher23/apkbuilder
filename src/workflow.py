@@ -157,6 +157,8 @@ class BuildManager(object):
 
 class TaskData(object):
     def __init__(self):
+        self.conf_file = None
+        self.project_index = None
         self.project_name = None
         self.app_name = None
         self.pkg = None
@@ -244,7 +246,7 @@ class TaskData(object):
     def get_build_args(self):
         self.args = ['./bins/python', 'src/auto_apk.py', '-a', self.app_name,
                      '-p', self.pkg, '-o', self.alias, '-U', self.pull_code, '-b', self.branch,
-                     '-g', self.git_address, '-A', self.build_apk_dir, '-P', self.process_chain]
+                     '-e', self.conf_file, '-A', self.build_apk_dir, '-I', self.project_index]
         if self.need_upload == '1':
             self.args.append('-u')
         if self.icon_path:

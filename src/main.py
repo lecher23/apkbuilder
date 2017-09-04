@@ -13,15 +13,16 @@ if not os.path.exists(os.path.join(CUR_PATH, 'src')):
     exit(1)
 sys.path.append(os.path.join(CUR_PATH, 'src'))
 
-import torndb
 import tornado.web
 import tornado.ioloop
 import api_handlers
 import cfg_wrapper
 
 
-def run(port, debug=False):
-    settings['conf'] = cfg_wrapper.CfgWrapper(os.path.join(CUR_PATH, 'confs/srv.json'))
+def run(settings, port, debug=False):
+    cfg_path = os.path.join(CUR_PATH, 'confs/srv.json')
+    settings['conf_path'] = cfg_path
+    settings['conf'] = cfg_wrapper.CfgWrapper(cfg_path)
     app = tornado.web.Application(
         [
             (r'/pkg/build3rd', api_handlers.SubmitBuildHandler),
@@ -50,7 +51,7 @@ def run(port, debug=False):
     tornado.ioloop.IOLoop.instance().start()
 
 
-if __name__ == "__main__":
+def main():
     from tornado.options import options
     from workflow import BuildManager
 
@@ -72,7 +73,10 @@ if __name__ == "__main__":
         'static_path': os.path.join(CUR_PATH, 'pages/statics'),
         'static_url_prefix': '/pkg/static/',
         'root_path': CUR_PATH,
-        'db': torndb.Connection('139.196.148.39', 'mimi2_db', 'mimi2_user', 'mimi2_111222', time_zone='+8:00'),
         'builder': bm
     }
-    run(5007, True)
+    run(settings, 5007, True)
+
+
+if __name__ == "__main__":
+    main()

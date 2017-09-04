@@ -1,13 +1,12 @@
 # coding: utf-8
 
-import sys
-
-reload(sys)
-sys.setdefaultencoding("utf-8")
-
+from __future__ import unicode_literals
 import os
+import sys
+import json
 import commands
 import datetime
+import logging
 from optparse import OptionParser
 import modules.defines as dfs
 
@@ -24,8 +23,10 @@ if __name__ == "__main__":
     parser.add_option('-o', '--output', dest='alias', default="", help='output file name.')
     parser.add_option('-A', '--apkdir', dest='apkdir', help='apk dir built by processor.')
     parser.add_option('-U', '--update', dest='pull_code', default="false", help='pull code from git.')
-    parser.add_option('-g', '--git', dest='git_addr', help='git ssh address.')
-    parser.add_option('-P', '--processors', dest='processors', help='processors list, use , split.')
+    # parser.add_option('-g', '--git', dest='git_addr', help='git ssh address.')
+    # parser.add_option('-P', '--processors', dest='processors', help='processors list, use , split.')
+    parser.add_option('-I', '--index', dest='prj_idx', help='project index in conf list.')
+    parser.add_option('-e', '--config', dest='conf_file', help='project conf file.')
     parser.add_option('-b', '--branch', dest='git_branch', default="invalid", help='pull code from git.')
     parser.add_option('-u', '--upload', dest='need_upload', action="store_true", default=False,
                       help='upload apk to ucloud.')
@@ -56,7 +57,9 @@ if __name__ == "__main__":
     fp_log_file = None
     params = {}
     try:
-        import logging
+        obj = json.load(open(options.conf_file))
+        apk_conf = obj['prj'][int(options.prj_idx)]
+
         tmp_dir = os.path.join(os.getcwd(), '.tmp')
         work_dir = os.path.join(
             tmp_dir, 'prj-{}'.format(datetime.datetime.today().strftime('%Y%m%d-%H%M%S')))
@@ -77,7 +80,7 @@ if __name__ == "__main__":
             'icon': options.icon,
             'output': options.alias,
             'update_code': options.pull_code,
-            'git_address': options.git_addr,
+            'git_address': apk_conf['git'],
             'git_branch': options.git_branch,
             'apk_dir': options.apkdir,
             'tmp_dir': tmp_dir,
@@ -87,7 +90,8 @@ if __name__ == "__main__":
             'cdn_bucket': 'dlapp',
             'enable_debug': options.debug,
             'compiler': options.compiler,
-            'work_dir': work_dir
+            'work_dir': work_dir,
+            'apk_conf': apk_conf
         }
 
         if options.build_ver == '3rd':
@@ -100,7 +104,7 @@ if __name__ == "__main__":
             exit(dfs.err_invalid_param)
         from build_executor import BuildExecutor
 
-        be = BuildExecutor(options.processors, params)
+        be = BuildExecutor(apk_conf['build_processors'], params)
         exit_code = be.execute()
     except Exception, e:
         import traceback

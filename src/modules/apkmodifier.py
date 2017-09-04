@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 import re
 import os
 import logging
+import random
 import modules.defines as dfs
 from xml.etree import ElementTree
 from utils import _call
@@ -22,15 +23,16 @@ release_sign_conf_str = '    signingConfig signingConfigs.releaseCfg\n        '
 
 
 class ApkModifier(object):
-    def __init__(self, dir_prj_root, f_xml, f_gradle, namespace=None, dir_res=None, icon_name=None):
+    def __init__(self, dir_prj_root, apk_conf_obj):
         self.dir_prj_root = dir_prj_root
-        self.f_manifest = f_xml
-        self.f_built_gradle = f_gradle
-        self.f_prop_gradle = os.path.join(self.dir_prj_root, 'gradle.properties')
-        self.dir_res = dir_res
+        structure_conf = apk_conf_obj['structure']
+        self.f_manifest = os.path.join(dir_prj_root, structure_conf['manifest'])
+        self.f_built_gradle = os.path.join(dir_prj_root, apk_conf_obj['build.gradle'])
+        self.f_prop_gradle = os.path.join(dir_prj_root, 'gradle.properties')
+        self.dir_res = os.path.join(dir_prj_root, apk_conf_obj['resource'])
         self.icon_dir_prefix = 'drawable'
-        self.icon_file_name = icon_name or 'ic_launcher.png'
-        self.xml_namespace = namespace or '{http://schemas.android.com/apk/res/android}'
+        self.icon_file_name = structure_conf.get('icon_file', None) or 'ic_launcher.png'
+        self.xml_namespace = structure_conf.get('namespace', None) or '{http://schemas.android.com/apk/res/android}'
 
     def set_appid_in_build_gradle(self, app_id):
         ptn = re.compile(r'(.*?defaultConfig\s*\{\s*applicationId\s+")(.*?)("\s+.*)')
@@ -56,9 +58,6 @@ class ApkModifier(object):
             logging.fatal('repace appid in %s failed.', self.f_manifest)
             return dfs.err_replace_strings
         return 0
-
-    def replace(self, target, value):
-        pass
 
     @staticmethod
     def update_strings_xml(f_string, kv, f_out):
@@ -115,6 +114,23 @@ class ApkModifier(object):
                     return False
                 replaced_count += 1
         return bool(replaced_count)
+
+    @staticmethod
+    def gen_key_settings(work_dir):
+        ch_list = ('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+                   'u', 'v', 'w', 'x', 'y', 'z')
+        pwd = "".join(random.sample(ch_list, 16))
+        keytool_in = '\n'.join((pwd, pwd, 'Spider', 'TMSLYLY', 'Cor.td', 'HonKong', 'ThreeSeason', '86', 'y', ''))
+        with open(os.path.join(work_dir, 'genkey.in'), "w") as f:
+            f.write(keytool_in.encode('utf-8'))
+        alias = "".join(random.sample(ch_list, 8))
+        key_name = "{}-{}.keystore".format(alias, pwd)
+        cmd = 'cd {} && keytool -genkey -v -keystore {} -alias {} ' \
+              '-keyalg RSA -keysize 1024 -validity 90 < genkey.in'.format(work_dir, key_name, alias)
+        if not _call(cmd):
+            logging.fatal('make key file failed.')
+            return None
+        return os.path.join(work_dir, key_name), alias, pwd
 
     @staticmethod
     def _get_xml_namespace(ele):

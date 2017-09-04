@@ -32,6 +32,8 @@ class SubmitBuildHandler(tornado.web.RequestHandler):
 
     def _init_common_params(self, task_data):
         prj_tag = self.get_argument('project')
+        task_data.project_index = prj_tag
+        task_data.conf_file = self.settings['conf_path']
         task_data.app_name = self.get_argument('name').strip()
         task_data.pkg = self.get_argument('pkg').strip()
         task_data.need_upload = self.get_argument('upload', '1')
