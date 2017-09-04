@@ -2,9 +2,8 @@
 
 import os
 import logging
-import datetime
-import commands
 import modules.defines as dfs
+from utils import _call
 
 
 def do_work(params):
@@ -28,19 +27,15 @@ def do_work(params):
     else:
         return dfs.err_pull_code
 
-    logging.info('{}'.format(cmd))
-    if cmd:
-        s, o = commands.getstatusoutput(cmd)
-        if s != 0:
-            logging.fatal('pull code from git failed.\ncmd:[{}]\noutput:[{}]'.format(cmd, o))
-            return dfs.err_pull_code
+    if cmd and not _call(cmd):
+        logging.fatal('pull code from git failed.\ncmd:[{}]'.format(cmd))
+        return dfs.err_pull_code
 
-    cmd = 'cp -r {} {}'.format(repo_dir_abs_path, work_dir)
-    logging.info(cmd)
-    s, o = commands.getstatusoutput(cmd)
-    if s != 0:
-        logging.fatal('copy project [{}]->[{}] failed:[{}]'.format(repo_dir_abs_path, work_dir, o))
+    prj_dir = os.path.join(work_dir, 'prj')
+    cmd = 'cp -r {} {}'.format(repo_dir_abs_path, prj_dir)
+    if not _call(cmd):
+        logging.fatal('copy project [{}]->[{}]'.format(repo_dir_abs_path, work_dir))
         return dfs.err_cp_prj
-    params['prj_dir'] = os.path.join(work_dir, repo_dir_name)
+    params['prj_dir'] = prj_dir
     params['work_dir'] = work_dir
     return 0

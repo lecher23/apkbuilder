@@ -27,9 +27,9 @@ class ApkModifier(object):
         self.dir_prj_root = dir_prj_root
         structure_conf = apk_conf_obj['structure']
         self.f_manifest = os.path.join(dir_prj_root, structure_conf['manifest'])
-        self.f_built_gradle = os.path.join(dir_prj_root, apk_conf_obj['build.gradle'])
+        self.f_built_gradle = os.path.join(dir_prj_root, structure_conf['build.gradle'])
         self.f_prop_gradle = os.path.join(dir_prj_root, 'gradle.properties')
-        self.dir_res = os.path.join(dir_prj_root, apk_conf_obj['resource'])
+        self.dir_res = os.path.join(dir_prj_root, structure_conf['resource'])
         self.icon_dir_prefix = 'drawable'
         self.icon_file_name = structure_conf.get('icon_file', None) or 'ic_launcher.png'
         self.xml_namespace = structure_conf.get('namespace', None) or '{http://schemas.android.com/apk/res/android}'

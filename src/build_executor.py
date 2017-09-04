@@ -6,7 +6,7 @@ import logging
 class BuildExecutor(object):
     def __init__(self, s_processors, params):
         self.params = params
-        self.processors = s_processors.split(',')
+        self.processors = s_processors
 
     def execute(self):
         for processor in self.processors:

@@ -308,3 +308,6 @@ class TaskDataForSmsPay(TaskData):
 
     def get_build_prv_args(self):
         self.args += ['-L', ','.join(self.cn_names), '-l', ','.join(self.cn_vals), '-v', 'sms']
+
+    def get_app_id(self):
+        return 'not implement'
