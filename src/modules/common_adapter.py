@@ -22,16 +22,16 @@ def do_work(params):
     try:
         m_apk = ApkModifier(prj_path, apk_conf)
         ec = m_apk.update_manifest(app_name, cn_setting)
-        if not ec:
+        if ec:
             return ec
-        exit_code = m_apk.set_appid_in_build_gradle(pkg)
-        if exit_code != 0:
-            return exit_code
+        ec = m_apk.set_appid_in_build_gradle(pkg)
+        if ec:
+            return ec
         key_setting = m_apk.gen_key_settings(work_dir) if not params['enable_debug'] else ('a', 'a', 'a')
         if not key_setting:
             return dfs.err_make_key_file
         ec = m_apk.add_gradle_properties(*key_setting)
-        if ec != 0:
+        if ec:
             return ec
         if icon and not m_apk.replace_icon(icon):
             return dfs.err_cp_icon
