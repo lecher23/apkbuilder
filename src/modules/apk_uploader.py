@@ -31,14 +31,18 @@ def do_work(params):
                 signed_apk_path, os.path.join(os.getcwd(), 'apk/files/', out_file_name), o))
         return dfs.err_cp_apk
     if do_upload:
-        # 构造上传对象，并设置公私钥
-        handler = putufile.PutUFile(public_key, private_key)
-        # upload small file to public bucket
-        logging.info('start upload file to public bucket')
-        # 上传到目标空间后保存的文件名
-        key = "auto/{}".format(out_file_name)
-        # 请求上传
-        ret, resp = handler.putfile(apk_bucket, key, signed_apk_path)
+        try:
+            # 构造上传对象，并设置公私钥
+            handler = putufile.PutUFile(public_key, private_key)
+            # upload small file to public bucket
+            logging.info('start upload file to public bucket')
+            # 上传到目标空间后保存的文件名
+            key = "auto/{}".format(out_file_name)
+            # 请求上传
+            ret, resp = handler.putfile(apk_bucket, key, signed_apk_path)
+        except:
+            logging.exception('upload apk failed.')
+            return dfs.err_upload_apk
         logging.info('ucloud response:[{}]'.format(resp.content))
         if resp.status_code == 200:
             url = 'http://{}/{}'.format(domain, key)
