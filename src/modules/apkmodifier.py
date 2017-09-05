@@ -38,10 +38,8 @@ class ApkModifier(object):
         ptn = re.compile(r'(.*?defaultConfig\s*\{\s*applicationId\s+")(.*?)("\s+.*)')
         bptn = re.compile(r'(defaultConfig)')
         xptn = re.compile(r'(defaultConfig\s*\{[\s\S]*?release\s*\{[\s\S]*?)(\})')
-        print self.f_built_gradle
         with open(self.f_built_gradle) as f:
             ctnt = f.read()
-            print ctnt
             if ctnt.find('signingConfigs') >= 0:
                 logging.fatal('signingConfigs already in %s, abort.', self.f_built_gradle)
                 return dfs.err_replace_strings
