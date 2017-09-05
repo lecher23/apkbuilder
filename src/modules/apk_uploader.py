@@ -8,6 +8,7 @@ import commands
 
 import modules.defines as dfs
 from utils.ucloud.ufile import putufile
+from utils import _call
 
 
 def do_work(params):
@@ -24,12 +25,10 @@ def do_work(params):
         return dfs.err_find_built_apk
     logging.info("singed apk:{}".format(signed_apk_path))
     out_file_name = '{}-{}.apk'.format(output_apk_name, datetime.datetime.now().strftime('%H%M%S'))
-    s, o = commands.getstatusoutput(
-        'cp {} {}'.format(signed_apk_path, os.path.join(os.getcwd(), 'apk_files/', out_file_name)))
-    if s != 0:
-        logging.fatal(
-            'copy [{}]->[{}] failed:[{}]'.format(
-                signed_apk_path, os.path.join(os.getcwd(), 'apk/files/', out_file_name), o))
+    local_file_name = output_apk_name + '.apk'
+    cmd = 'cp {} {}'.format(signed_apk_path, os.path.join(os.getcwd(), 'apk_files/', local_file_name))
+    if not _call(cmd):
+        logging.fatal('copy apk failed.')
         return dfs.err_cp_apk
     if do_upload:
         try:
@@ -48,12 +47,8 @@ def do_work(params):
         if resp.status_code == 200:
             url = 'http://{}/{}'.format(domain, key)
             logging.info("upload success: url[{}]".format(url))
-            # print "下载链接: {}<br/>APK索引名:[{}],<a target=\"_blank\" href=\"http://git.leeqo.cn:8000\">索引页面</a>".\
-            #     format(url, output_apk_name)
             sys.stdout.write(url)
             return 0
         logging.fatal("upload failed.")
         return dfs.err_upload_apk
-    # print "下载链接: {}<br/>APK索引名:[{}],<a target=\"_blank\" href=\"http://git.leeqo.cn:8000\">索引页面</a>".format(
-    # '', output_apk_name)
     return 0
