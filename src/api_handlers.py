@@ -48,16 +48,20 @@ class SubmitBuildHandler(tornado.web.RequestHandler):
 
     def get_icon_file(self):
         if not self.request.files:
+            logging.info('no icon file in request.')
             return ""
         remote_file = self.request.files['myfile'][0]
         ftype = self.get_file_suffix(remote_file['filename'])
+        logging.info('icon file name: %s', remote_file['filename'])
         if ftype != 'png':
+            logging.info('icon file type err.')
             self.write('<h2>错误的文件类型, 期望的文件类型是 png.</h2>')
             return None
         else:
             fname, fpath = self.get_tmp_file_path(ftype)
             with open(fpath, 'w') as fw:
                 fw.write(remote_file['body'])
+            logging.info('get icon file:%s', fpath)
             return fpath
 
     def get_tmp_file_path(self, ftype):

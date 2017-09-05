@@ -1,9 +1,10 @@
 # coding:utf-8
 
-import commands
-import logging
 import os
 import sys
+import datetime
+import logging
+import commands
 
 import modules.defines as dfs
 from utils.ucloud.ufile import putufile
@@ -22,7 +23,7 @@ def do_work(params):
         logging.fatal("can not find signed apk.")
         return dfs.err_find_built_apk
     logging.info("singed apk:{}".format(signed_apk_path))
-    out_file_name = '{}.apk'.format(output_apk_name)
+    out_file_name = '{}-{}.apk'.format(output_apk_name, datetime.datetime.now().strftime('%H%M%S'))
     s, o = commands.getstatusoutput(
         'cp {} {}'.format(signed_apk_path, os.path.join(os.getcwd(), 'apk_files/', out_file_name)))
     if s != 0:

@@ -84,9 +84,9 @@ class ApkModifier(object):
         self._set_app_name(app_node, app_name)
         code = self._set_meta_data(app_node, meta_data_values)
         if not code:
-            return code
-        obj.write(self.f_manifest, encoding='utf-8')
-        return self._restore_namespace()
+            obj.write(self.f_manifest, encoding='utf-8')
+            return self._restore_namespace()
+        return code
 
     def add_gradle_properties(self, key_file, alias, password):
         logging.info('inject properties to %s', self.f_prop_gradle)
