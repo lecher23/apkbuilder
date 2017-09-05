@@ -53,7 +53,7 @@ def run(settings, port, debug=False):
 
 def main():
     from tornado.options import options
-    from apktasks import BuildManager
+    from task_manager import BuildManager
 
     default_params = {
         '--log-to-stderr': 'True',

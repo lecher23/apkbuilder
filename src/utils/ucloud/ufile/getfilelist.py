@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
 
 
-import os
 import json
+import os
+
+from ucloud.compact import s
+from ucloud.logger import logger
+from ucloud.util import _check_dict
+
+from utils.ucloud.ufile import config
 from .baseufile import BaseUFile
 from .magicwrapper import Mimetype
-from .httprequest import ResponseInfo
-from ucloud.util import _check_dict
-from ucloud.logger import logger
-from ucloud.compact import s
-from ucloud.ufile import config
 
 
 class GetFileList(BaseUFile):

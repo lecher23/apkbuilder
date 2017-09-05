@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 
-from ucloud.logger import logger
 from ucloud.auth import Auth
-from ucloud.util import _check_dict
-from ucloud.ufile import config
-from ucloud.ufile.config import UCLOUD_API_URL
-from ucloud.ufile.httprequest import _bucket_request, ResponseInfo
 from ucloud.compact import s
+from ucloud.logger import logger
+from ucloud.util import _check_dict
+
+from utils.ucloud.ufile import UCLOUD_API_URL
+from utils.ucloud.ufile import _bucket_request
+from utils.ucloud.ufile import config
+
 
 class BucketManager(object):
     """

@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from .baseufile import BaseUFile
-from ucloud.util import _check_dict, ufile_put_url
-from .httprequest import ResponseInfo, _delete_file
 from ucloud.logger import logger
-from ucloud.ufile import config
+from ucloud.util import _check_dict, ufile_put_url
+
+from utils.ucloud.ufile import config
+from .baseufile import BaseUFile
+from .httprequest import _delete_file
 
 
 class DeleteUFile(BaseUFile):

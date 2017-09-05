@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 
 import os
-from .baseufile import BaseUFile
-from ucloud.util import file_etag, _check_dict, ufile_uploadhit_url
-from ucloud.ufile.config import BLOCKSIZE
-from .httprequest import ResponseInfo, _uploadhit_file
-from ucloud.logger import logger
-from .magicwrapper import Mimetype
+
 from ucloud.compact import s
-from ucloud.ufile import config
+from ucloud.logger import logger
+from ucloud.util import file_etag, _check_dict, ufile_uploadhit_url
+
+from utils.ucloud.ufile import BLOCKSIZE
+from utils.ucloud.ufile import config
+from .baseufile import BaseUFile
+from .httprequest import _uploadhit_file
+from .magicwrapper import Mimetype
 
 
 class UploadHitUFile(BaseUFile):

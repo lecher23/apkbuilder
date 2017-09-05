@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from .compact import *
-from ucloud.ufile import config
-
 import base64
 import hashlib
 import os
 import struct
+
+from utils.ucloud.ufile import config
+from .compact import *
 
 
 def urlsafe_b64encode(data):

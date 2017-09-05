@@ -1,15 +1,17 @@
 # -*- coding: utf-8 -*-
 
-import os
-import time
 import hashlib
-from .baseufile import BaseUFile
-from .magicwrapper import Mimetype
-from .httprequest import ResponseInfo, _post_file
-from ucloud.util import _check_dict, ufile_post_url
+import time
+
+from ucloud.compact import b, s
 from ucloud.logger import logger
-from ucloud.compact import b, s, u
-from ucloud.ufile import config
+from ucloud.util import _check_dict, ufile_post_url
+
+from utils.ucloud.ufile import config
+from .baseufile import BaseUFile
+from .httprequest import _post_file
+from .magicwrapper import Mimetype
+
 
 class PostUFile(BaseUFile):
     """

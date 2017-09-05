@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-import string
-from ucloud.auth import Auth
 from ucloud.util import _check_dict
+
+from utils.ucloud.auth import Auth
 
 
 class BaseUFile(object):

@@ -1,11 +1,12 @@
 # coding:utf-8
 
+import commands
+import logging
 import os
 import sys
-import logging
-import commands
+
 import modules.defines as dfs
-from ucloud.ufile import putufile
+from utils.ucloud.ufile import putufile
 
 
 def do_work(params):

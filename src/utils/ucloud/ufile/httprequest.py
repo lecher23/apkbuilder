@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 
-import requests
 import re
-from ucloud.ufile import config
+
+import requests
 from ucloud.logger import logger
+
+from utils.ucloud.ufile import config
+
 
 def __return_wraper(response, content_consumed=False):
     """

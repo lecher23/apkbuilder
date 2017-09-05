@@ -1,13 +1,13 @@
 #-*- coding: utf-8 -*-
 
-import os
-import json
-from .baseufile import BaseUFile
-from .httprequest import _getfilelist, ResponseInfo
-from ucloud.util import _check_dict, ufile_getfilelist_url
-from ucloud.logger import logger
-from ucloud.ufile import config
 from ucloud.compact import s
+from ucloud.logger import logger
+from ucloud.util import _check_dict, ufile_getfilelist_url
+
+from utils.ucloud.ufile import config
+from .baseufile import BaseUFile
+from .httprequest import _getfilelist
+
 
 class GetFileList(BaseUFile):
     """

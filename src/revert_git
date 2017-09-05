@@ -1,4 +1,0 @@
-#! /bin/sh
-
-cd $1 && git status| grep "修改：" |awk '{print $2}'|xargs git checkout
-cd $1 && git checkout $2

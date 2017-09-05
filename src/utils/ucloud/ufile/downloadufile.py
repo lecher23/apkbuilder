@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 
-import os
 import time
-from .baseufile import BaseUFile
-from ucloud.ufile import config
-from .httprequest import ResponseInfo, _download_file
-from ucloud.util import _check_dict
-from ucloud.logger import logger
-from ucloud.compact import s
 import urllib
+
+from ucloud.compact import s
+from ucloud.logger import logger
+from ucloud.util import _check_dict
+
+from utils.ucloud.ufile import config
+from .baseufile import BaseUFile
+from .httprequest import _download_file
 
 
 class DownloadUFile(BaseUFile):

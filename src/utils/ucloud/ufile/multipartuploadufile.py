@@ -1,16 +1,18 @@
 # -*- coding: utf-8 -*-
 
 
-import os
 import json
-from .baseufile import BaseUFile
-from ucloud.util import _check_dict, initialsharding_url, finishsharding_url, shardingupload_url, _file_iter
-from .httprequest import ResponseInfo, _initialsharding, _finishsharding, _shardingupload
-from ucloud.logger import logger
-from ucloud.compact import s
-from .magicwrapper import Mimetype
-from ucloud.ufile import config
+import os
 import time
+
+from ucloud.compact import s
+from ucloud.logger import logger
+from ucloud.util import _check_dict, initialsharding_url, finishsharding_url, shardingupload_url, _file_iter
+
+from utils.ucloud.ufile import config
+from .baseufile import BaseUFile
+from .httprequest import _initialsharding, _finishsharding, _shardingupload
+from .magicwrapper import Mimetype
 
 
 class MultipartUploadUFile(BaseUFile):

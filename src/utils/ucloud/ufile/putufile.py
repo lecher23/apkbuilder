@@ -1,15 +1,17 @@
 # -*- coding: utf-8 -*-
 
 
-import os
 import json
-from .baseufile import BaseUFile
-from .magicwrapper import Mimetype
-from .httprequest import _put_stream, _put_file, ResponseInfo
-from ucloud.util import _check_dict, ufile_put_url
-from ucloud.logger import logger
+import os
+
 from ucloud.compact import s
-from ucloud.ufile import config
+from ucloud.logger import logger
+from ucloud.util import _check_dict, ufile_put_url
+
+from utils.ucloud.ufile import config
+from .baseufile import BaseUFile
+from .httprequest import _put_stream, _put_file
+from .magicwrapper import Mimetype
 
 
 class PutUFile(BaseUFile):
