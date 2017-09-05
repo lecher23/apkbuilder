@@ -34,6 +34,7 @@ class ApkModifier(object):
         self.xml_namespace = structure_conf.get('namespace', None) or '{http://schemas.android.com/apk/res/android}'
 
     def set_appid_in_build_gradle(self, app_id):
+        logging.info('set app id(package name) to %s', app_id)
         ptn = re.compile(r'(.*?defaultConfig\s*\{\s*applicationId\s+")(.*?)("\s+.*)')
         bptn = re.compile(r'(defaultConfig)')
         xptn = re.compile(r'(defaultConfig\s*\{[\s\S]*?release\s*\{[\s\S]*?)(\})')
@@ -52,6 +53,7 @@ class ApkModifier(object):
             ctnt = xptn.sub(lambda m: '{}{}{}'.format(m.group(1), release_sign_conf_str, m.group(2)), ctnt)
         with open(self.f_built_gradle, 'w') as f:
             f.write(ctnt.encode("utf-8"))
+        logging.info('replace app id in %s', self.f_manifest)
         cmd = 'sed -i "s/{}/{}/g" {}'.format(old_app_id.replace('.', '\\.'), app_id, self.f_manifest)
         if not _call(cmd):
             logging.fatal('repace appid in %s failed.', self.f_manifest)
@@ -76,6 +78,7 @@ class ApkModifier(object):
         return True
 
     def update_manifest(self, app_name, meta_data_values):
+        logging.info('update manifest, app_name=%s, kv=%s', app_name, meta_data_values)
         obj = ElementTree.parse(self.f_manifest)
         app_node = obj.find('application')
         self._set_app_name(app_node, app_name)
@@ -86,6 +89,7 @@ class ApkModifier(object):
         return self._restore_namespace()
 
     def add_gradle_properties(self, key_file, alias, password):
+        logging.info('inject properties to %s', self.f_prop_gradle)
         with open(self.f_prop_gradle) as f:
             content = f.read()
         keys = ('RELEASE_KEY_PASSWORD', 'RELEASE_KEY_ALIAS', 'RELEASE_STORE_PASSWORD', 'RELEASE_STORE_FILE')
@@ -102,8 +106,12 @@ class ApkModifier(object):
         return 0
 
     def replace_icon(self, icon_path):
+        logging.info('replace icon to :%s', icon_path)
+        if not icon_path:
+            return True
         icon_dirs = \
             [os.path.join(self.dir_res, f) for f in os.listdir(self.dir_res) if f.startswith(self.icon_dir_prefix)]
+        logging.info('icon may in dir: %s', icon_dirs)
         replaced_count = 0
         for icon_dir in icon_dirs:
             f_icon = os.path.join(icon_dir, self.icon_file_name)
@@ -116,6 +124,7 @@ class ApkModifier(object):
 
     @staticmethod
     def gen_key_settings(work_dir):
+        logging.info('generate signature key under %s', work_dir)
         ch_list = ('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
                    'u', 'v', 'w', 'x', 'y', 'z')
         pwd = "".join(random.sample(ch_list, 16))

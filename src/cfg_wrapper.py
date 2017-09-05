@@ -58,8 +58,11 @@ class CfgWrapper(object):
     def get_prj_name(self, prj_id):
         return self.prj_conf_list[int(prj_id)]['name']
 
-    def get_project_channels(self, prj):
-        return [Option(text=k, value=v) for k, v in self.prj_conf_list[int(prj)]['channels'].items()]
+    def get_project_channels(self, prj_idx):
+        return [Option(text=k, value=v) for k, v in self.prj_conf_list[int(prj_idx)]['channels'].items()]
 
-    def get_project_channel_keys(self, prj):
-        return self.prj_conf_list[int(prj)]['channels'].values()
+    def get_project_channel_keys(self, prj_idx):
+        return self.prj_conf_list[int(prj_idx)]['channels'].values()
+
+    def get_project_key_channel(self, prj_idx):
+        return self.prj_conf_list[int(prj_idx)].get('key-channels', '')

@@ -78,6 +78,9 @@ class SubmitSmsBuildHandler(SubmitBuildHandler):
         prj_tag = self.get_argument('project')
         task_data = TaskDataForSmsPay()
         cn_names = self.settings['conf'].get_project_channel_keys(prj_tag)
+        key_channel = self.settings['conf'].get_project_key_channel(prj_tag)
+        if key_channel:
+            task_data.key_channel = self.get_argument(key_channel)
         task_data.cn_names = cn_names
         for cn_name in cn_names:
             task_data.cn_vals.append(self.get_argument(cn_name))

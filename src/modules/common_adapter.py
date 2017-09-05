@@ -33,7 +33,7 @@ def do_work(params):
         ec = m_apk.add_gradle_properties(*key_setting)
         if ec:
             return ec
-        if icon and not m_apk.replace_icon(icon):
+        if not m_apk.replace_icon(icon):
             return dfs.err_cp_icon
     except Exception:
         logging.exception("prepare build conf file failed.")

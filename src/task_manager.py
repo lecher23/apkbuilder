@@ -302,6 +302,7 @@ class TaskDataForSmsPay(TaskData):
         super(TaskDataForSmsPay, self).__init__()
         self.cn_names = []
         self.cn_vals = []
+        self.key_channel = None
 
     def validate_param(self):
         if not self.cn_names or not self.cn_vals:
@@ -312,4 +313,4 @@ class TaskDataForSmsPay(TaskData):
         self.args += ['-L', ','.join(self.cn_names), '-l', ','.join(self.cn_vals), '-v', 'sms']
 
     def get_app_id(self):
-        return 'not implement'
+        return self.key_channel
