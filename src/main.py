@@ -78,5 +78,20 @@ def main():
     run(settings, 5007, True)
 
 
+def test_uploader():
+    params = {
+        'output': 'test',
+        'upload': True,
+        'cdn_domain': "dl.668097.top",
+        'cdn_pub_key': 'VzX6TfNkaTCVV0VACvrJZ87hcNuXtBMdtm6jDG/4uxqhdohu6BEoaQ==',
+        'cdn_prv_key': '9b9c2e5319b4f91476ad3f2fd11695c24a0699ef',
+        'cdn_bucket': 'dlapp',
+        'signed_apk_path': '/home/licheng/workspace/github/apkbuilder/.tmp/prj-20170908-145211/prj/app/build/outputs/apk/app-release.apk'
+    }
+    from modules.apk_uploader import do_work
+    do_work(params)
+
+
 if __name__ == "__main__":
-    main()
+    test_uploader()
+    # main()

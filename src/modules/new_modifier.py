@@ -17,23 +17,20 @@ def do_work(params):
 
     if len(channel_list) != len(channel_values):
         return dfs.err_invalid_param
-    cn_setting = {channel_list[i]: val for i, val in enumerate(channel_values)}
+    settings = {channel_list[i]: val for i, val in enumerate(channel_values)}
     '''adapter func entrance'''
     try:
         m_apk = ApkModifier(prj_path, apk_conf)
-        ec = m_apk.update_manifest(app_name, cn_setting)
-        if ec:
-            return ec
         ec = m_apk.update_build_gradle(pkg)
         if ec:
             return ec
         key_setting = m_apk.gen_key_settings(work_dir) if not params['enable_debug'] else ('a', 'a', 'a')
         if not key_setting:
             return dfs.err_make_key_file
-        ec = m_apk.update_gradle_properties(*key_setting)
+        ec = m_apk.update_gradle_properties(*key_setting, other_kv=settings)
         if ec:
             return ec
-        if not m_apk.replace_icon(icon):
+        if not m_apk.replace_icon_v2(icon):
             return dfs.err_cp_icon
     except Exception:
         logging.exception("prepare build conf file failed.")

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from ucloud.util import _check_dict
+from utils.ucloud.util import _check_dict
 
 from utils.ucloud.auth import Auth
 

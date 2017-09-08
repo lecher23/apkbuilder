@@ -4,9 +4,9 @@
 import json
 import os
 
-from ucloud.compact import s
-from ucloud.logger import logger
-from ucloud.util import _check_dict, ufile_put_url
+from utils.ucloud.compact import s
+from utils.ucloud.logger import logger
+from utils.ucloud.util import _check_dict, ufile_put_url
 
 from utils.ucloud.ufile import config
 from .baseufile import BaseUFile

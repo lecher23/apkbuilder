@@ -3,7 +3,7 @@
 import re
 
 import requests
-from ucloud.logger import logger
+from utils.ucloud.logger import logger
 
 from utils.ucloud.ufile import config
 

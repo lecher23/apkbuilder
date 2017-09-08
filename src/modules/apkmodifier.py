@@ -32,32 +32,36 @@ class ApkModifier(object):
         self.icon_dir_prefix = 'drawable'
         self.icon_file_name = structure_conf.get('icon_file', None) or 'ic_launcher.png'
         self.xml_namespace = structure_conf.get('namespace', None) or '{http://schemas.android.com/apk/res/android}'
+        self.b_replace_appid = structure_conf.get('update_appid', True)
 
-    def set_appid_in_build_gradle(self, app_id):
-        logging.info('set app id(package name) to %s', app_id)
+    def update_build_gradle(self, app_id):
+        logging.info('update build.gradle with app id(package name) to %s', app_id)
         ptn = re.compile(r'(.*?defaultConfig\s*\{\s*applicationId\s+")(.*?)("\s+.*)')
         bptn = re.compile(r'(defaultConfig)')
         xptn = re.compile(r'(defaultConfig\s*\{[\s\S]*?release\s*\{[\s\S]*?)(\})')
+        old_app_id = None
         with open(self.f_built_gradle) as f:
             ctnt = f.read()
             if ctnt.find('signingConfigs') >= 0:
                 logging.fatal('signingConfigs already in %s, abort.', self.f_built_gradle)
                 return dfs.err_replace_strings
-            res = ptn.findall(ctnt)
-            if not res or len(res) > 1:
-                return dfs.err_bad_build_gradle_file
-            old_app_id = res[0][1]
-            # add sign apk conf.
-            ctnt = ptn.sub(lambda m: '{}{}{}'.format(m.group(1), app_id, m.group(3)), ctnt)
+            if self.b_replace_appid:
+                res = ptn.findall(ctnt)
+                if not res or len(res) > 1:
+                    return dfs.err_bad_build_gradle_file
+                old_app_id = res[0][1]
+                # add sign apk conf.
+                ctnt = ptn.sub(lambda m: '{}{}{}'.format(m.group(1), app_id, m.group(3)), ctnt)
             ctnt = bptn.sub(lambda m: '{}{}'.format(sign_conf_str, m.group(1)), ctnt)
             ctnt = xptn.sub(lambda m: '{}{}{}'.format(m.group(1), release_sign_conf_str, m.group(2)), ctnt)
         with open(self.f_built_gradle, 'w') as f:
             f.write(ctnt.encode("utf-8"))
-        logging.info('replace app id in %s', self.f_manifest)
-        cmd = 'sed -i "s/{}/{}/g" {}'.format(old_app_id.replace('.', '\\.'), app_id, self.f_manifest)
-        if not _call(cmd):
-            logging.fatal('repace appid in %s failed.', self.f_manifest)
-            return dfs.err_replace_strings
+        if self.b_replace_appid:
+            logging.info('replace app id in %s', self.f_manifest)
+            cmd = 'sed -i "s/{}/{}/g" {}'.format(old_app_id.replace('.', '\\.'), app_id, self.f_manifest)
+            if not _call(cmd):
+                logging.fatal('repace appid in %s failed.', self.f_manifest)
+                return dfs.err_replace_strings
         return 0
 
     @staticmethod
@@ -88,7 +92,7 @@ class ApkModifier(object):
             return self._restore_namespace()
         return code
 
-    def add_gradle_properties(self, key_file, alias, password, other_kv=None):
+    def update_gradle_properties(self, key_file, alias, password, other_kv=None):
         logging.info('inject properties to %s', self.f_prop_gradle)
         content = []
         all_kv = {
