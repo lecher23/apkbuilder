@@ -88,21 +88,33 @@ class ApkModifier(object):
             return self._restore_namespace()
         return code
 
-    def add_gradle_properties(self, key_file, alias, password):
+    def add_gradle_properties(self, key_file, alias, password, other_kv=None):
         logging.info('inject properties to %s', self.f_prop_gradle)
+        content = []
+        all_kv = {
+            'RELEASE_KEY_PASSWORD': password,
+            'RELEASE_KEY_ALIAS': alias,
+            'RELEASE_STORE_PASSWORD': password,
+            'RELEASE_STORE_FILE': key_file
+        }
+        if other_kv:
+            all_kv.update(other_kv)
+        replaced = set()
         with open(self.f_prop_gradle) as f:
-            content = f.read()
-        keys = ('RELEASE_KEY_PASSWORD', 'RELEASE_KEY_ALIAS', 'RELEASE_STORE_PASSWORD', 'RELEASE_STORE_FILE')
-        for key in keys:
-            if content.find(key) >= 0:
-                logging.fatal('param [{}] already defined in [{}]'.format(key, self.f_prop_gradle))
-                return dfs.err_replace_strings
-        content += '\nRELEASE_KEY_PASSWORD={}\n' \
-                   'RELEASE_KEY_ALIAS={}\n' \
-                   'RELEASE_STORE_PASSWORD={}\n' \
-                   'RELEASE_STORE_FILE={}\n'.format(password, alias, password, key_file)
+            for line in f:
+                line = line.strip()
+                if not line or line.startswith('#'):
+                    continue
+                key = line.split('=')[0].strip()
+                if key in all_kv:
+                    content.append('{}={}'.format(key, other_kv[key]))
+                    replaced.add(key)
+                else:
+                    content.append(line)
+        for key in set(all_kv.keys()) - replaced:
+            content.append('{}={}'.format(key, all_kv[key]))
         with open(self.f_prop_gradle, 'w') as f:
-            f.write(content)
+            f.write('\n'.join(content) + '\n')
         return 0
 
     def replace_icon(self, icon_path):
@@ -121,6 +133,9 @@ class ApkModifier(object):
                     return False
                 replaced_count += 1
         return bool(replaced_count)
+
+    def replace_icon_v2(self, icon_path):
+        return _call('cp %s %s' % (icon_path, os.path.join(self.dir_prj_root, self.icon_file_name)))
 
     @staticmethod
     def gen_key_settings(work_dir):

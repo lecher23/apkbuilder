@@ -4,7 +4,6 @@ import os
 import sys
 import datetime
 import logging
-import commands
 
 import modules.defines as dfs
 from utils.ucloud.ufile import putufile
