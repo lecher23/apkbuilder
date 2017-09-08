@@ -24,13 +24,18 @@ release_sign_conf_str = '    signingConfig signingConfigs.releaseCfg\n        '
 class ApkModifier(object):
     def __init__(self, dir_prj_root, apk_conf_obj):
         self.dir_prj_root = dir_prj_root
+
         structure_conf = apk_conf_obj['structure']
-        self.f_manifest = os.path.join(dir_prj_root, structure_conf['manifest'])
+        set_if_exist = lambda key: os.path.join(dir_prj_root, structure_conf[key]) if key in structure_conf else None
+        self.f_manifest = set_if_exist('manifest')
+        self.dir_res = set_if_exist('resource')
         self.f_built_gradle = os.path.join(dir_prj_root, structure_conf['build.gradle'])
         self.f_prop_gradle = os.path.join(dir_prj_root, 'gradle.properties')
-        self.dir_res = os.path.join(dir_prj_root, structure_conf['resource'])
+        self.f_strings = os.path.join(dir_prj_root, structure_conf['strings'])
+
         self.icon_dir_prefix = 'drawable'
         self.icon_file_name = structure_conf.get('icon_file', None) or 'ic_launcher.png'
+
         self.xml_namespace = structure_conf.get('namespace', None) or '{http://schemas.android.com/apk/res/android}'
         self.b_replace_appid = structure_conf.get('update_appid', True)
 
@@ -56,7 +61,7 @@ class ApkModifier(object):
             ctnt = xptn.sub(lambda m: '{}{}{}'.format(m.group(1), release_sign_conf_str, m.group(2)), ctnt)
         with open(self.f_built_gradle, 'w') as f:
             f.write(ctnt.encode("utf-8"))
-        if self.b_replace_appid:
+        if self.b_replace_appid and self.f_manifest:
             logging.info('replace app id in %s', self.f_manifest)
             cmd = 'sed -i "s/{}/{}/g" {}'.format(old_app_id.replace('.', '\\.'), app_id, self.f_manifest)
             if not _call(cmd):
@@ -64,10 +69,9 @@ class ApkModifier(object):
                 return dfs.err_replace_strings
         return 0
 
-    @staticmethod
-    def update_strings_xml(f_string, kv, f_out):
+    def update_strings(self, kv):
         '''using xml to replace.'''
-        xml_obj = ElementTree.parse(f_string)
+        xml_obj = ElementTree.parse(self.f_strings)
         root = xml_obj.getroot()
         replaced = set()
         for node in root.getchildren():
@@ -78,8 +82,11 @@ class ApkModifier(object):
         if len(replaced) != len(kv):
             logging.fatal("replace failed: %s != %s", kv.keys(), replaced)
             return False
-        xml_obj.write(f_out, encoding='utf-8')
+        xml_obj.write(self.f_strings, encoding='utf-8')
         return True
+
+    def update_app_name(self, app_name):
+        return self.update_strings({'app_name': app_name})
 
     def update_manifest(self, app_name, meta_data_values):
         logging.info('update manifest, app_name=%s, kv=%s', app_name, meta_data_values)
@@ -111,14 +118,15 @@ class ApkModifier(object):
                     continue
                 key = line.split('=')[0].strip()
                 if key in all_kv:
-                    content.append('{}={}'.format(key, other_kv[key]))
+                    content.append('%s=%s' % (key, all_kv[key]))
                     replaced.add(key)
                 else:
                     content.append(line)
         for key in set(all_kv.keys()) - replaced:
             content.append('{}={}'.format(key, all_kv[key]))
+        s = '\n'.join(content) + '\n'
         with open(self.f_prop_gradle, 'w') as f:
-            f.write('\n'.join(content) + '\n')
+            f.write(s.encode('utf-8'))
         return 0
 
     def replace_icon(self, icon_path):
@@ -139,6 +147,8 @@ class ApkModifier(object):
         return bool(replaced_count)
 
     def replace_icon_v2(self, icon_path):
+        if not icon_path:
+            return True
         return _call('cp %s %s' % (icon_path, os.path.join(self.dir_prj_root, self.icon_file_name)))
 
     @staticmethod

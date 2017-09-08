@@ -92,6 +92,27 @@ def test_uploader():
     do_work(params)
 
 
+def test_modifier():
+    import json
+    params = {
+        'prj_dir': '/home/licheng/workspace/github/apkbuilder/.tmp/EhViewer-1.0.24-sms_union5',
+        'pkg': 'a.b.c',
+        'icon': None,
+        'chn_name': 'CHANNELNAME,DATAEYECHANNELID',
+        'chn_val': 'aaa,bbb',
+        'work_dir': '/home/licheng/workspace/github/apkbuilder/.tmp',
+        'apk_conf': json.load(open('/home/licheng/workspace/github/apkbuilder/confs/srv.json'))['prj'][2],
+        'enable_debug': True,
+        'app_name': "法科有"
+    }
+    from modules.new_modifier import do_work
+    do_work(params)
+
+
 if __name__ == "__main__":
-    test_uploader()
-    # main()
+
+    if len(sys.argv) > 1:
+        # test_uploader()
+        test_modifier()
+    else:
+        main()
