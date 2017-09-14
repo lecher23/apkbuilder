@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="http://code.jquery.com/jquery-3.1.1.min.js"
+            integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+          integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+
+    <style>
+        .form-bg{background:#00b4ef}.form-horizontal{background:#fff;padding-bottom:40px;border-radius:15px;text-align:center}.form-horizontal .heading{display:block;font-size:35px;font-weight:700;padding:35px 0;border-bottom:1px solid #f0f0f0;margin-bottom:30px}.form-horizontal .form-group{padding:0 40px;margin:0 0 25px;position:relative}.form-horizontal .form-control{background:#f0f0f0;border:none;border-radius:20px;box-shadow:none;padding:0 20px 0 45px;height:40px;transition:all .3s ease 0s}.form-horizontal .form-control:focus{background:#e0e0e0;box-shadow:none;outline:0 0}.form-horizontal .form-group i{position:absolute;top:9pt;left:60px;font-size:17px;color:#c8c8c8;transition:all .5s ease 0s}.form-horizontal .form-control:focus+i{color:#00b4ef}.form-horizontal .fa-question-circle{display:inline-block;position:absolute;top:9pt;right:60px;font-size:20px;color:gray;transition:all .5s ease 0s}.form-horizontal .fa-question-circle:hover{color:#000}.form-horizontal .main-checkbox{float:left;width:20px;height:20px;background:#11a3fc;border-radius:50%;position:relative;margin:5px 0 0 5px;border:1px solid #11a3fc}.form-horizontal .main-checkbox label{width:20px;height:20px;position:absolute;top:0;left:0;cursor:pointer}.form-horizontal .main-checkbox label:after{content:"";width:10px;height:5px;position:absolute;top:5px;left:4px;border:3px solid #fff;border-top:none;border-right:none;background:transparent;opacity:0;-webkit-transform:rotate(-45deg);transform:rotate(-45deg)}.form-horizontal .main-checkbox input[type=checkbox]{visibility:hidden}.form-horizontal .main-checkbox input[type=checkbox]:checked+label:after{opacity:1}.form-horizontal .text{float:left;margin-left:7px;line-height:20px;padding-top:5px;text-transform:capitalize}.form-horizontal @media only screen and (max-width:479px){.form-horizontal .form-group{padding:0 25px}.form-horizontal .form-group i{left:45px}.form-horizontal }
+    </style>
+    <title>自动打包</title>
+</head>
+<body style="background-color:#7F9FBD">
+<br/><br/><br/>
+<div class="container">
+    <form action="/pkg/setting" method="POST" enctype="multipart/form-data" class="form-horizontal">
+        <span class="heading">自动打包:选择工程</span>
+        <br/>
+        <label>选择工程:</label>
+        <select name="project" style="width:30%;height:30px">
+            {% for prj in prj_list %}
+            <option value="{{prj.value}}">{{prj.text}}</option>
+            {% end %}
+        </select>
+        <br/><br/><br/>
+        <input class="btn btn-primary" type="submit" value="下一步">
+        <div class="container">
+            <span style="float:right;width:30px">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <a style="float:right" class="btn btn-success btn-sm" href="/pkg/status">查看当前打包队列</a>
+            <span style="float:right">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <a style="float:right" class="btn btn-success btn-sm" href="http://git.leeqo.cn:8000/">历史包下载页面</a>
+        </div>
+    </form>
+</div>
+</body>
+</html>
