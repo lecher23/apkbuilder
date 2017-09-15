@@ -6,7 +6,7 @@ import random
 import logging
 import commands
 import subprocess
-from utils import _call
+from utils import exe_cmd
 import modules.defines as dfs
 
 # so_seed_prj = "/home/android/playground/Cryptor"
@@ -49,7 +49,7 @@ def build_so_prj(so_prj_path, gradle_bin, pub_key, out_file):
     cpp_dir = os.path.join(so_prj_path, cpp_path)
     cmd = 'cd {} && sed -i \'s/%part1%/{}/g\' *.cpp && sed -i \'s/%part2%/{}/g\' *.cpp ' \
           '&& sed -i \'s/%part3%/{}/g\' *.cpp '.format(cpp_dir, *res)
-    if not _call(cmd):
+    if not exe_cmd(cmd):
         return dfs.err_replace_so_signature
     args = [gradle_bin, 'build']
     out_file.write("-----build so-----\n")
@@ -67,30 +67,30 @@ def replace_so_file(work_dir, so_prj_dir, unprotected_apk, keystore_file, from_a
         cmd = 'mkdir {0} && cd {0} && cp {1} . && unzip {2}'.format(
             so_apk_unzip_dir, fp_ori_so_apk, built_so_apk_name
         )
-        if not _call(cmd):
+        if not exe_cmd(cmd):
             return dfs.err_unzip_apk, None
     else:
         return dfs.err_for_future, None
 
     so_name = os.path.basename(so_path_in_apk)
     cmd = 'cd {0} && chmod +x {1} && {2} -9 -v -o {3} {1}'.format(so_apk_unzip_dir, so_path_in_apk, upx, so_name)
-    if not _call(cmd):
+    if not exe_cmd(cmd):
         return dfs.err_add_shell_to_so, None
     # 解包目标APK
     name = os.path.basename(unprotected_apk)
-    if not _call('cd {0} && cp {1} . ; apktool d {2}'.format(
+    if not exe_cmd('cd {0} && cp {1} . ; apktool d {2}'.format(
             work_dir, unprotected_apk, name)):
         return dfs.err_unzip_target_apk, None
     path = os.path.join(work_dir, os.path.splitext(name)[0])
     arm_so_dir = os.path.join(path, 'lib/armeabi')
     # 直接替换lib下的文件
     cmd = "cd {} && cp {} .".format(arm_so_dir, os.path.join(so_apk_unzip_dir, '*.so'))
-    if not _call(cmd):
+    if not exe_cmd(cmd):
         return dfs.err_mv_so_to_apk, None
     # 打包
     apk_file = 'safe-{}'.format(name)
     cmd = "cd {} && apktool b {} -o {}".format(work_dir, os.path.splitext(name)[0], apk_file)
-    if not _call(cmd):
+    if not exe_cmd(cmd):
         return dfs.err_zip_apk, None
     # 签名, alias-password.keystore
     alias, pwd = os.path.splitext(os.path.basename(keystore_file))[0].split('-')
@@ -99,7 +99,7 @@ def replace_so_file(work_dir, so_prj_dir, unprotected_apk, keystore_file, from_a
         f.write(pwd + '\n')
     cmd = "cd {} && jarsigner -verbose -keystore  {} {} {} < {}".format(
         work_dir, keystore_file, apk_file, alias, pwd_file)
-    if not _call(cmd):
+    if not exe_cmd(cmd):
         return dfs.err_resign_apk, None
     return 0, os.path.join(work_dir, apk_file)
 
@@ -112,7 +112,7 @@ def gen_key_store(work_dir):
     key_file = "{}-{}.keystore".format(alias, pwd)
     cmd = 'cd {} && keytool -genkey -v -keystore {} -alias {} -keyalg RSA -keysize {} -validity 365' \
           '< /tmp/keytool.in'.format(work_dir, key_file, alias, 1024)
-    if not _call(cmd):
+    if not exe_cmd(cmd):
         return dfs.err_gen_keystore
     with open(os.path.join(work_dir, 'password'), 'w') as f:
         f.write('{}\n'.format(pwd))
@@ -122,11 +122,11 @@ def gen_key_store(work_dir):
 def get_pub_key(work_dir, signed_apk_path):
     raw_apk_dir = os.path.join(work_dir, 'raw_apk')
     # move signed apk to work_dir/raw_apk
-    if not _call('mkdir {1} && cp {0} {1}'.format(signed_apk_path, raw_apk_dir)):
+    if not exe_cmd('mkdir {1} && cp {0} {1}'.format(signed_apk_path, raw_apk_dir)):
         return dfs.err_make_dir, None
     # unzip apk
     signed_apk_name = os.path.basename(signed_apk_path)
-    if not _call('cd {} && unzip {}'.format(raw_apk_dir, signed_apk_name)):
+    if not exe_cmd('cd {} && unzip {}'.format(raw_apk_dir, signed_apk_name)):
         return dfs.err_unzip_apk, None
     # get pub key
     csr_path = None
@@ -169,7 +169,7 @@ def do_work(params):
     if ec != 0:
         return ec
     tmp_so_prj_path = os.path.join(work_dir, 'CryptPrj')
-    if not _call('cp -r {} {}'.format(so_seed_prj_path, tmp_so_prj_path)):
+    if not exe_cmd('cp -r {} {}'.format(so_seed_prj_path, tmp_so_prj_path)):
         return dfs.err_cp_encrpt_prj
     while 1:
         ec = build_so_prj(tmp_so_prj_path, gradle_bin, pub_key_str, out_file)
@@ -182,5 +182,5 @@ def do_work(params):
         params['signed_apk_path'] = apk_file
         break
     # remove tmp project.
-    _call("rm -rf {}".format(tmp_so_prj_path))
+    exe_cmd("rm -rf {}".format(tmp_so_prj_path))
     return ec

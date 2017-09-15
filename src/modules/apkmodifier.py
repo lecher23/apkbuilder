@@ -6,7 +6,7 @@ import logging
 import random
 import modules.defines as dfs
 from xml.etree import ElementTree
-from utils import _call
+from utils import exe_cmd
 
 sign_conf_str = '''signingConfigs {
         releaseCfg {
@@ -64,7 +64,7 @@ class ApkModifier(object):
         if self.b_replace_appid and self.f_manifest:
             logging.info('replace app id in %s', self.f_manifest)
             cmd = 'sed -i "s/{}/{}/g" {}'.format(old_app_id.replace('.', '\\.'), app_id, self.f_manifest)
-            if not _call(cmd):
+            if not exe_cmd(cmd):
                 logging.fatal('repace appid in %s failed.', self.f_manifest)
                 return dfs.err_replace_strings
         return 0
@@ -141,7 +141,7 @@ class ApkModifier(object):
             f_icon = os.path.join(icon_dir, self.icon_file_name)
             if os.path.exists(f_icon):
                 logging.info('replace app icon in dir {}.'.format(icon_dir))
-                if not _call('cp {} {}'.format(icon_path, f_icon)):
+                if not exe_cmd('cp {} {}'.format(icon_path, f_icon)):
                     return False
                 replaced_count += 1
         return bool(replaced_count)
@@ -149,7 +149,7 @@ class ApkModifier(object):
     def replace_icon_v2(self, icon_path):
         if not icon_path:
             return True
-        return _call('cp %s %s' % (icon_path, os.path.join(self.dir_prj_root, self.icon_file_name)))
+        return exe_cmd('cp %s %s' % (icon_path, os.path.join(self.dir_prj_root, self.icon_file_name)))
 
     @staticmethod
     def gen_key_settings(work_dir):
@@ -164,7 +164,7 @@ class ApkModifier(object):
         key_name = "{}-{}.keystore".format(alias, pwd)
         cmd = 'cd {} && keytool -genkey -v -keystore {} -alias {} ' \
               '-keyalg RSA -keysize 1024 -validity 90 < genkey.in'.format(work_dir, key_name, alias)
-        if not _call(cmd):
+        if not exe_cmd(cmd):
             logging.fatal('make key file failed.')
             return None
         return os.path.join(work_dir, key_name), alias, pwd
@@ -193,4 +193,4 @@ class ApkModifier(object):
 
     def _restore_namespace(self):
         cmd = 'sed -i s/xmlns:ns0/xmlns:android/g {0} && sed -i s/ns0:/android:/g {0}'.format(self.f_manifest)
-        return 0 if _call(cmd) else dfs.err_replace_strings
+        return 0 if exe_cmd(cmd) else dfs.err_replace_strings

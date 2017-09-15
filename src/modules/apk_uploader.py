@@ -7,7 +7,7 @@ import logging
 
 import modules.defines as dfs
 from utils.ucloud.ufile import putufile
-from utils import _call
+from utils import exe_cmd
 
 
 def do_work(params):
@@ -26,7 +26,7 @@ def do_work(params):
     out_file_name = '{}-{}.apk'.format(output_apk_name, datetime.datetime.now().strftime('%H%M%S'))
     local_file_name = output_apk_name + '.apk'
     cmd = 'cp {} {}'.format(signed_apk_path, os.path.join(os.getcwd(), 'apk_files/', local_file_name))
-    if not _call(cmd):
+    if not exe_cmd(cmd):
         logging.fatal('copy apk failed.')
         return dfs.err_cp_apk
     if do_upload:

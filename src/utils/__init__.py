@@ -53,7 +53,7 @@ def get_key_settings(work_dir):
     return os.path.join(work_dir, key_name), alias, pwd
 
 
-def _call(cmd):
+def exe_cmd(cmd):
     s, o = commands.getstatusoutput(cmd)
     if s != 0:
         logging.fatal('exe [{}] failed.reason:[{}]'.format(cmd, o))
@@ -68,6 +68,6 @@ def replace_icon(prj_path, app_res_dir, icon_dir_prefix, icon_path):
         [os.path.join(icon_dir_dir, f) for f in os.listdir(icon_dir_dir) if f.startswith(icon_dir_prefix)]
     for icon_dir in icon_dirs:
         logging.info('replace app icon in dir {}.'.format(icon_dir))
-        if not _call('cp {} {}/ic_launcher.png'.format(icon_path, icon_dir)):
+        if not exe_cmd('cp {} {}/ic_launcher.png'.format(icon_path, icon_dir)):
             return False
     return True

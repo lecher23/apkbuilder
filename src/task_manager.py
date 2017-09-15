@@ -1,18 +1,17 @@
 # coding: utf-8
 
-import commands
 import datetime
 import json
 import logging
 import os
 import urllib
-
 import tornado.ioloop
 import tornado.web
-from tornado.httpclient import AsyncHTTPClient, HTTPRequest
 
+from tornado.httpclient import AsyncHTTPClient, HTTPRequest
 from modules.defines import ErrMapping
 from utils.tsubprocess import Subprocess
+from utils import exe_cmd
 
 BuildStatus = [
     ('等待打包', '#8B864E'),
@@ -104,11 +103,10 @@ class BuildManager(object):
         query = urllib.urlencode(params)
         for host in self.admin_hosts:
             cmd = "curl -s -X POST \"{}?{}\"".format(host, query)
-            s, o = commands.getstatusoutput(cmd)
-            if s != 0:
-                logging.warning('exe cmd[{}] failed, reason:{}'.format(cmd, o))
+            if not exe_cmd(cmd):
+                logging.warning('exe cmd[{}] failed'.format(cmd))
             else:
-                logging.info('exe cmd[{}] success, output:[{}]'.format(cmd, o))
+                logging.info('exe cmd[{}] success'.format(cmd))
 
     def notify_dingtalk(self):
         body = json.dumps({
@@ -246,7 +244,7 @@ class TaskData(object):
         return True
 
     def get_build_args(self):
-        self.args = ['./bins/python', 'src/auto_apk.py', '-a', self.app_name,
+        self.args = ['python', 'src/auto_apk.py', '-a', self.app_name,
                      '-p', self.pkg, '-o', self.alias, '-U', self.pull_code, '-b', self.branch,
                      '-e', self.conf_file, '-A', self.build_apk_dir, '-I', self.project_index]
         if self.need_upload == '1':
@@ -262,7 +260,7 @@ class TaskData(object):
         for attr in dir(self):
             if not attr.startswith('_'):
                 val = getattr(self, attr)
-                print "{}={}".format(attr, val)
+                print("{}={}".format(attr, val))
 
     def get_download_url(self):
         if self.is_build_success():

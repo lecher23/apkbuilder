@@ -1,17 +1,13 @@
 # coding: utf-8
-import sys
-
-reload(sys)
-sys.setdefaultencoding("utf-8")
-
 
 import os
+import sys
 import json
-import commands
 import datetime
 import logging
-from optparse import OptionParser
 import modules.defines as dfs
+from optparse import OptionParser
+from utils import exe_cmd
 
 sys.path.append(os.path.join(os.getcwd(), 'src'))
 
@@ -49,7 +45,7 @@ if __name__ == "__main__":
         if not options.app_name or not options.pkg_name:
             raise AttributeError("Some args required.")
         options.pull_code = ('false', 'true').index(options.pull_code)
-    except AttributeError, e:
+    except AttributeError as e:
         import traceback
 
         traceback.print_exc()
@@ -62,6 +58,7 @@ if __name__ == "__main__":
     try:
         obj = json.load(open(options.conf_file))
         apk_conf = obj['prj'][int(options.prj_idx)]
+        ucloud_conf = obj['ucloud']
 
         tmp_dir = os.path.join(os.getcwd(), '.tmp')
         work_dir = os.path.join(
@@ -87,10 +84,10 @@ if __name__ == "__main__":
             'git_branch': options.git_branch,
             'apk_dir': options.apkdir,
             'tmp_dir': tmp_dir,
-            'cdn_domain': "dl.668097.top",
-            'cdn_pub_key': 'VzX6TfNkaTCVV0VACvrJZ87hcNuXtBMdtm6jDG/4uxqhdohu6BEoaQ==',
-            'cdn_prv_key': '9b9c2e5319b4f91476ad3f2fd11695c24a0699ef',
-            'cdn_bucket': 'dlapp',
+            'cdn_domain': ucloud_conf['cdn_domain'],
+            'cdn_pub_key': ucloud_conf['cdn_pub_key'],
+            'cdn_prv_key': ucloud_conf['cdn_prv_key'],
+            'cdn_bucket': ucloud_conf['cdn_bucket'],
             'enable_debug': options.debug,
             'compiler': options.compiler,
             'work_dir': work_dir,
@@ -109,7 +106,7 @@ if __name__ == "__main__":
 
         be = BuildExecutor(apk_conf['build_processors'], params)
         exit_code = be.execute()
-    except Exception, e:
+    except Exception as e:
         import traceback
 
         exit_code = 99
@@ -118,7 +115,6 @@ if __name__ == "__main__":
         if fp_log_file:
             fp_log_file.close()
         if 'prj_dir' in params and False:
-            s, o = commands.getstatusoutput('rm -rf {}'.format(params['prj_dir']))
-            if s != 0:
-                logging.warning('delete prj [{}] failed. reason:[{}]'.format(params['prj_dir'], o))
+            if not exe_cmd('rm -rf {}'.format(params['prj_dir'])):
+                logging.warning('delete prj [{}] failed'.format(params['prj_dir']))
     exit(exit_code)

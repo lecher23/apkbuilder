@@ -3,7 +3,7 @@
 import os
 import logging
 import modules.defines as dfs
-from utils import _call
+from utils import exe_cmd
 
 
 def do_work(params):
@@ -27,13 +27,13 @@ def do_work(params):
     else:
         return dfs.err_pull_code
 
-    if cmd and not _call(cmd):
+    if cmd and not exe_cmd(cmd):
         logging.fatal('pull code from git failed.\ncmd:[{}]'.format(cmd))
         return dfs.err_pull_code
 
     prj_dir = os.path.join(work_dir, 'prj')
     cmd = 'cp -r {} {}'.format(repo_dir_abs_path, prj_dir)
-    if not _call(cmd):
+    if not exe_cmd(cmd):
         logging.fatal('copy project [{}]->[{}]'.format(repo_dir_abs_path, work_dir))
         return dfs.err_cp_prj
     params['prj_dir'] = prj_dir

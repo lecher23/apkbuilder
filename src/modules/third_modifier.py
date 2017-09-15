@@ -5,7 +5,7 @@ import re
 import logging
 from xml.etree import ElementTree
 import modules.defines as dfs
-from utils import get_key_settings, _call, replace_icon
+from utils import get_key_settings, exe_cmd, replace_icon
 
 # relative path
 strings_xml_path = "quicklive/src/main/res/values/strings.xml"
