@@ -53,7 +53,7 @@ class CfgWrapper(object):
         :return: project name, project pay type, version list
         '''
         prj = self.prj_conf_list[int(prj_id)]
-        return prj['name'], prj['pay_type'], [Option(value=v, text=k) for k, v in prj['versions'].items()]
+        return prj['name'], prj['prj_type'], [Option(value=v, text=k) for k, v in prj['versions'].items()]
 
     def get_prj_name(self, prj_id):
         return self.prj_conf_list[int(prj_id)]['name']

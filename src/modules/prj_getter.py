@@ -1,5 +1,5 @@
 # coding: utf-8
-
+from __future__ import unicode_literals
 import os
 import logging
 import modules.defines as dfs
@@ -13,7 +13,7 @@ def do_work(params):
     branch = params['git_branch']
     update_code = params['update_code']
     work_dir = params['work_dir']
-    if not repo_addr.endswith('.git') or not repo_addr.startswith('git@'):
+    if not repo_addr.endswith('.git') or repo_addr[:3] not in ('git', 'ssh'):
         logging.fatal('invalid repo address[{}]. expect ssh address.'.format(repo_addr))
         return dfs.err_invalid_repo
     repo_name = os.path.basename(repo_addr)[:-4]

@@ -1,5 +1,6 @@
 # coding: utf-8
 
+from __future__ import unicode_literals
 import os
 import logging
 import datetime
@@ -35,7 +36,7 @@ class SubmitBuildHandler(tornado.web.RequestHandler):
         task_data.project_index = prj_tag
         task_data.conf_file = self.settings['conf_path']
         task_data.app_name = self.get_argument('name').strip()
-        task_data.pkg = self.get_argument('pkg').strip()
+        task_data.pkg = self.get_argument('pkg', 'NotSet').strip()
         task_data.need_upload = self.get_argument('upload', '1')
         task_data.alias = self.get_argument('alias').strip()
         task_data.icon_path = self.get_icon_file()
@@ -110,9 +111,12 @@ class ChooseProjectHandler(tornado.web.RequestHandler):
 class SettingProjectPageHandler(tornado.web.RequestHandler):
     def post(self):
         prj = self.get_argument('project')
-        name, pay_type, ver_list = self.settings['conf'].get_project_info(prj)
-        if pay_type == '3rd':
+        name, prj_type, ver_list = self.settings['conf'].get_project_info(prj)
+        if prj_type == '3rd':
             self.render('index_3rd.html', ver_list=ver_list, prj_name=name, prj_idx=prj)
-        else:
+        elif prj_type == 'sms':
             channel_list = self.settings['conf'].get_project_channels(prj)
             self.render('index_sms.html', ver_list=ver_list, channel_list=channel_list, prj_name=name, prj_idx=prj)
+        elif prj_type == 'common':
+            channel_list = self.settings['conf'].get_project_channels(prj)
+            self.render('index_com.html', ver_list=ver_list, channel_list=channel_list, prj_name=name, prj_idx=prj)

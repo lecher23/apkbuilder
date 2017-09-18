@@ -1,5 +1,6 @@
 # coding: utf-8
 
+from __future__ import unicode_literals
 import os
 import sys
 import json
@@ -55,6 +56,7 @@ if __name__ == "__main__":
     exit_code = 0
     fp_log_file = None
     params = {}
+
     try:
         obj = json.load(open(options.conf_file))
         apk_conf = obj['prj'][int(options.prj_idx)]
@@ -102,6 +104,8 @@ if __name__ == "__main__":
             params['chn_val'] = options.chn_val_list
         else:
             exit(dfs.err_invalid_param)
+        params = {k: v.decode('utf-8') if isinstance(v, str) else v for k, v in params.items()}
+
         from build_executor import BuildExecutor
 
         be = BuildExecutor(apk_conf['build_processors'], params)

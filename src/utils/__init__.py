@@ -1,5 +1,6 @@
 # coding=utf-8
 
+from __future__ import unicode_literals
 import os
 import time
 import random
@@ -41,7 +42,7 @@ def gen_uni_code():
 def get_key_settings(work_dir):
     pwd = "".join(random.sample(ch_list, 16))
     with open(os.path.join(work_dir, 'genkey.in'), "w") as f:
-        f.write(keytool_in.format(pwd))
+        f.write(keytool_in.encode('utf-8').format(pwd))
     alias = "".join(random.sample(ch_list, 8))
     key_name = "{}-{}.keystore".format(alias, pwd)
     cmd = 'cd {} && keytool -genkey -v -keystore {} -alias {} ' \
@@ -54,11 +55,15 @@ def get_key_settings(work_dir):
 
 
 def exe_cmd(cmd):
+    if isinstance(cmd, unicode):
+        cmd = cmd.encode('utf-8')
     s, o = commands.getstatusoutput(cmd)
+    if isinstance(o, str):
+        o = o.decode('utf-8')
     if s != 0:
-        logging.fatal('exe [{}] failed.reason:[{}]'.format(cmd, o))
+        logging.fatal('exe [{}] failed.reason:[{}]'.format(cmd.decode('utf-8'), o))
         return False
-    logging.info('\n>>>:{}\n>>>:{}'.format(cmd, o))
+    logging.info('\n>>>:{}\n>>>:{}'.format(cmd.decode('utf-8'), o))
     return True
 
 
