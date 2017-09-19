@@ -207,9 +207,9 @@ class TaskData(object):
             '<td>{0}</td>' \
             '<td>{1}</td>' \
             '<td>{2}</td>' \
-            '<td>{4}</td>' \
-            '<td><font color="{5}">{6}</font></td>' \
-            '<td>{7}</td>' \
+            '<td>{3}</td>' \
+            '<td><font color="{4}">{5}</font></td>' \
+            '<td>{6}</td>' \
             '</tr>'
 
         if self.is_build_success():
@@ -253,8 +253,9 @@ class TaskData(object):
             self.args.append('-i')
             self.args.append(self.icon_path)
         self.get_build_prv_args()
-        logging.info('build cmd: [{}]'.format(' '.join(self.args)))
-        return [arg.encode('utf-8') if isinstance(arg, unicode) else arg for arg in self.args]
+        self.args = [arg.encode('utf-8') if isinstance(arg, unicode) else arg for arg in self.args]
+        logging.info('build cmd: [%s]', self.args)
+        return self.args
 
     def debug(self):
         for attr in dir(self):
