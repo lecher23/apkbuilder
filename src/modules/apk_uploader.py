@@ -39,15 +39,15 @@ def do_work(params):
             # 上传到目标空间后保存的文件名
             key = "auto/{}".format(out_file_name)
             # 请求上传
-            ret, resp = handler.putfile(apk_bucket, key, signed_apk_path)
+            ret, resp = handler.putfile(safestr(apk_bucket), safestr(key), safestr(signed_apk_path))
         except:
             logging.exception('upload apk failed.')
             return dfs.err_upload_apk
-        logging.info('ucloud response:[{}]'.format(resp.content))
+        logging.info('ucloud response:[%s]', resp.content)
         if resp.status_code == 200:
             url = 'http://{}/{}'.format(domain, key)
-            logging.info("upload success: url[{}]".format(url))
-            sys.stdout.write(url)
+            logging.info("upload success: url[%s]", url)
+            sys.stdout.write(safestr(url))
             return 0
         logging.fatal("upload failed.")
         return dfs.err_upload_apk

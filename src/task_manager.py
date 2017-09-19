@@ -242,7 +242,7 @@ class TaskData(object):
         return True
 
     def get_build_args(self):
-        self.args = ['./python', 'src/auto_apk.py', '-a', self.app_name,
+        self.args = ['python', 'src/auto_apk.py', '-a', self.app_name,
                      '-p', self.pkg, '-o', self.alias, '-U', self.pull_code, '-b', self.branch,
                      '-e', self.conf_file, '-A', self.build_apk_dir, '-I', self.project_index]
         if self.need_upload == '1':
