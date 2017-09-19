@@ -118,7 +118,7 @@ if __name__ == "__main__":
     finally:
         if fp_log_file:
             fp_log_file.close()
-        if 'prj_dir' in params and False:
+        if 'prj_dir' in params:
             if not exe_cmd('rm -rf {}'.format(params['prj_dir'])):
                 logging.warning('delete prj [{}] failed'.format(params['prj_dir']))
     exit(exit_code)

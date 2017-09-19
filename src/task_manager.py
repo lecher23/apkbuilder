@@ -1,6 +1,5 @@
 # coding: utf-8
 
-from __future__ import unicode_literals
 import datetime
 import json
 import logging
@@ -208,7 +207,6 @@ class TaskData(object):
             '<td>{0}</td>' \
             '<td>{1}</td>' \
             '<td>{2}</td>' \
-            '<td>{3}</td>' \
             '<td>{4}</td>' \
             '<td><font color="{5}">{6}</font></td>' \
             '<td>{7}</td>' \
@@ -219,8 +217,9 @@ class TaskData(object):
                 self.output, self.get_inner_dl())
         else:
             result = self.output
-        return s.format(self.format_time(), self.project_name, self.app_name, self.pkg, self.alias,
-                        st_info[1], st_info[0], result)
+        args = (self.format_time(), self.project_name, self.app_name, self.alias, st_info[1], st_info[0], result)
+        logging.debug('%s', [type(item) for item in args])
+        return s.format(*[arg.encode('utf-8') if isinstance(arg, unicode) else arg for arg in args])
 
     def get_inner_dl(self):
         return "{}/{}.apk".format(self.inner_host, self.alias)
@@ -255,7 +254,7 @@ class TaskData(object):
             self.args.append(self.icon_path)
         self.get_build_prv_args()
         logging.info('build cmd: [{}]'.format(' '.join(self.args)))
-        return self.args
+        return [arg.encode('utf-8') if isinstance(arg, unicode) else arg for arg in self.args]
 
     def debug(self):
         for attr in dir(self):
