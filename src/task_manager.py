@@ -4,7 +4,6 @@ import datetime
 import json
 import logging
 import os
-import urllib
 import tornado.ioloop
 import tornado.web
 import requests
@@ -12,7 +11,6 @@ import requests
 from tornado.httpclient import AsyncHTTPClient, HTTPRequest
 from modules.defines import ErrMapping
 from utils.tsubprocess import Subprocess
-from utils import exe_cmd
 
 BuildStatus = [
     ('等待打包', '#8B864E'),

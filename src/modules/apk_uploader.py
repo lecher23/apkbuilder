@@ -32,13 +32,9 @@ def do_work(params):
         return dfs.err_cp_apk
     if do_upload:
         try:
-            # 构造上传对象，并设置公私钥
             handler = putufile.PutUFile(safestr(public_key), safestr(private_key))
-            # upload small file to public bucket
-            logging.info('start upload file to public bucket')
-            # 上传到目标空间后保存的文件名
             key = "auto/{}".format(out_file_name)
-            # 请求上传
+            logging.info('start upload file %s to public bucket %s', key, apk_bucket)
             ret, resp = handler.putfile(safestr(apk_bucket), safestr(key), safestr(signed_apk_path))
         except:
             logging.exception('upload apk failed.')
@@ -49,6 +45,6 @@ def do_work(params):
             logging.info("upload success: url[%s]", url)
             sys.stdout.write(safestr(url))
             return 0
-        logging.fatal("upload failed.")
+        logging.fatal("upload failed with code: %s.", resp.status_code)
         return dfs.err_upload_apk
     return 0
