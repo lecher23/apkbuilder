@@ -10,7 +10,7 @@ class BuildExecutor(object):
 
     def execute(self):
         for processor in self.processors:
-            logging.info('begin process:%s\nparams:', processor, self.params)
+            logging.info('begin process:%s\nparams:%s', processor, self.params)
             pkg = __import__(processor)
             module_name = processor[processor.rfind('.') + 1:]
             module = getattr(pkg, module_name)

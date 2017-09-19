@@ -39,7 +39,7 @@ def do_work(params):
         except:
             logging.exception('upload apk failed.')
             return dfs.err_upload_apk
-        logging.info('ucloud response:[%s]', resp.content)
+        logging.info('ucloud response:[%s], detail: %s', resp.content, resp)
         if resp.status_code == 200:
             url = 'http://{}/{}'.format(domain, key)
             logging.info("upload success: url[%s]", url)

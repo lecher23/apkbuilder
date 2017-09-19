@@ -11,6 +11,7 @@ import requests
 from tornado.httpclient import AsyncHTTPClient, HTTPRequest
 from modules.defines import ErrMapping
 from utils.tsubprocess import Subprocess
+from utils import safestr
 
 BuildStatus = [
     ('等待打包', '#8B864E'),
@@ -36,8 +37,7 @@ class BuildManager(object):
         self.dingtalk_entrance = 'https://oapi.dingtalk.com/robot/send?' \
                                  'access_token=558efa7f72a829910c234bb18c4a4f86855c1490bbd6fe4669d98f4daf7686cd'
         self.admin_hosts = [
-            "admin.91cashmobi.com/fyadminsys/bale/baleEnd",
-            "admin1.91cashmobi.com/fyadminsys/bale/baleEnd"
+            "http://admin.91cashmobi.com/fyadminsys/bale/baleEnd"
         ]
 
     def stop_builder(self, callback):
@@ -218,7 +218,7 @@ class TaskData(object):
         return s.format(*[arg.encode('utf-8') if isinstance(arg, unicode) else arg for arg in args])
 
     def get_inner_dl(self):
-        return "{}/{}.apk".format(self.inner_host, self.alias)
+        return "{}/{}.apk".format(safestr(self.inner_host), safestr(self.alias))
 
     def begin_build(self):
         self.status = 1
