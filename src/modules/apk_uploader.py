@@ -8,7 +8,7 @@ import logging
 
 import modules.defines as dfs
 from utils.ucloud.ufile import putufile
-from utils import exe_cmd
+from utils import exe_cmd, safestr
 
 
 def do_work(params):
@@ -33,7 +33,7 @@ def do_work(params):
     if do_upload:
         try:
             # 构造上传对象，并设置公私钥
-            handler = putufile.PutUFile(public_key, private_key)
+            handler = putufile.PutUFile(safestr(public_key), safestr(private_key))
             # upload small file to public bucket
             logging.info('start upload file to public bucket')
             # 上传到目标空间后保存的文件名

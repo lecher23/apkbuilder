@@ -76,3 +76,7 @@ def replace_icon(prj_path, app_res_dir, icon_dir_prefix, icon_path):
         if not exe_cmd('cp {} {}/ic_launcher.png'.format(icon_path, icon_dir)):
             return False
     return True
+
+
+def safestr(ori):
+    return ori.encode('utf-8') if isinstance(ori, unicode) else ori

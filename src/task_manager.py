@@ -7,6 +7,7 @@ import os
 import urllib
 import tornado.ioloop
 import tornado.web
+import requests
 
 from tornado.httpclient import AsyncHTTPClient, HTTPRequest
 from modules.defines import ErrMapping
@@ -100,13 +101,10 @@ class BuildManager(object):
             'channelId': self.current_task.get_app_id(),
             'apkUrl': self.current_task.get_download_url()
         }
-        query = urllib.urlencode(params)
         for host in self.admin_hosts:
-            cmd = "curl -s -X POST \"{}?{}\"".format(host, query)
-            if not exe_cmd(cmd):
-                logging.warning('exe cmd[{}] failed'.format(cmd))
-            else:
-                logging.info('exe cmd[{}] success'.format(cmd))
+            r = requests.post(host, params=params)
+            logging.warning(
+                'notify server with params [%s] %s', params, 'success' if r.status_code == 200 else 'failed')
 
     def notify_dingtalk(self):
         body = json.dumps({
